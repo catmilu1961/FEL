@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="infilefel_view_account_journal_form" model="ir.ui.view">
+            <field name="name">infilefel.account.journal.form</field>
+            <field name="model">account.journal</field>
+            <field name="inherit_id" ref="account.view_account_journal_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//form//sheet/group/group[1]" position="inside">
+                    <field name="infilefel_type"/>
+                    <field name="infilefel_organization_code"/>
+                    <field name="infilefel_vat_affiliation"/>
+                    <field name="infilefel_isr_scenery"/>
+                    <field name="infilefel_isr_phrases"/>
+                    <field name="infilefel_person_type"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

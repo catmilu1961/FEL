@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_infilefel_settings_user,User access to Settings,model_infilefel_settings,,1,0,0,0
+access_infilefel_settings_manager,Account manager access to Settings,model_infilefel_settings,account.group_account_manager,1,1,1,1

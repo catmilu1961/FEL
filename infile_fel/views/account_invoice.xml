@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="infilefel_account_invoice_form" model="ir.ui.view">
+            <field name="name">infilefel.account.invoice.form</field>
+            <field name="model">account.invoice</field>
+            <field name="inherit_id" ref="account.invoice_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//form/header/button[@name='action_invoice_open']" position="after">
+                    <button
+                        name="infilefel_invoice_void"
+                        string="Void document"
+                        type="object"
+                        class="oe_highlight"
+                        attrs="{'invisible':['|',('infilefel_sat_uuid','=',False), ('infilefel_void_uuid', '!=', False)]}"
+                        groups="account.group_account_invoice"
+                    />
+                </xpath>
+                <field name="payment_term_id" position="after">
+                    <field name="infilefel_export"/>
+                </field>
+                <xpath expr="//form//sheet/notebook" position="inside">
+                    <page name="infilefel" string="FEL Data" attrs="{'invisible':[('infilefel_uuid', '=', False)]}">
+                        <notebook name="infilefel_data">
+                            <page name="infilefel_invoice_data" string="FEL Invoice data">
+                                <group>
+                                    <field name="infilefel_uuid"/>
+                                    <field name="infilefel_sat_uuid"/>
+                                    <field name="infilefel_serial"/>
+                                    <field name="infilefel_number"/>
+                                </group>
+                                <group>
+                                    <field name="infilefel_sign_date"/>
+                                    <field name="infilefel_source_xml"/>
+                                    <field name="infilefel_signed_xml"/>
+                                    <field name="infilefel_result_xml"/>
+                                </group>
+                            </page>
+                            <page name="infilefel_void_data" string="FEL Void data" attrs="{'invisible':[('infilefel_void_uuid', '=', False)]}">
+                                <group>
+                                    <field name="infilefel_void_uuid"/>
+                                    <field name="infilefel_void_sat_uuid"/>
+                                </group>
+                                <group>
+                                    <field name="infilefel_void_source_xml"/>
+                                    <field name="infilefel_void_signed_xml"/>
+                                    <field name="infilefel_void_result_xml"/>
+                                </group>
+                            </page>
+                        </notebook>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="infilefel_account_invoice_supplier_form" model="ir.ui.view">
+            <field name="name">infilefel.account.invoice.supplier.form</field>
+            <field name="model">account.invoice</field>
+            <field name="inherit_id" ref="account.invoice_supplier_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//form/header/button[@name='action_invoice_open']" position="after">
+                    <button
+                        name="infilefel_invoice_void"
+                        string="Void document"
+                        type="object"
+                        class="oe_highlight"
+                        attrs="{'invisible':['|',('infilefel_sat_uuid','=',False), ('infilefel_void_uuid', '!=', False)]}"
+                        groups="account.group_account_invoice"
+                    />
+                </xpath>
+                <xpath expr="//form//sheet/notebook" position="inside">
+                    <page name="infilefel" string="FEL Data" attrs="{'invisible':[('infilefel_uuid', '=', False)]}">
+                        <notebook name="infilefel_data">
+                            <page name="infilefel_invoice_data" string="FEL Invoice data">
+                                <group>
+                                    <field name="infilefel_uuid"/>
+                                    <field name="infilefel_sat_uuid"/>
+                                    <field name="infilefel_serial"/>
+                                    <field name="infilefel_number"/>
+                                </group>
+                                <group>
+                                    <field name="infilefel_sign_date"/>
+                                    <field name="infilefel_source_xml"/>
+                                    <field name="infilefel_signed_xml"/>
+                                    <field name="infilefel_result_xml"/>
+                                </group>
+                            </page>
+                            <page name="infilefel_void_data" string="FEL Void data" attrs="{'invisible':[('infilefel_void_uuid', '=', False)]}">
+                                <group>
+                                    <field name="infilefel_void_uuid"/>
+                                    <field name="infilefel_void_sat_uuid"/>
+                                </group>
+                                <group>
+                                    <field name="infilefel_void_source_xml"/>
+                                    <field name="infilefel_void_signed_xml"/>
+                                    <field name="infilefel_void_result_xml"/>
+                                </group>
+                            </page>
+                        </notebook>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="sbg12e_invoice_tree" model="ir.ui.view">
+            <field name="name">SBG12e.account.invoice.tee</field>
+            <field name="model">account.invoice</field>
+            <field name="inherit_id" ref="account.invoice_tree"/>
+            <field name="arch" type="xml">
+                <field name="partner_id" position="after">
+                    <field name="number"/>
+                </field>
+            </field>
+        </record>
+    </data>
+</odoo>
