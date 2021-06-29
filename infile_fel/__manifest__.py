@@ -18,7 +18,7 @@
         'views/infilefel_settings.xml',
         'views/account_tax.xml',
         'views/account_journal.xml',
-        'views/account_invoice.xml',
+        'views/account_move.xml',
         "security/ir.model.access.csv",
     ],
     'installable': True,

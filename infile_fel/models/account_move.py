@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 from odoo import models, fields, api, exceptions, _
 
-class infilefel_account_invoice(models.Model):
-    _name = "account.invoice"
-    _inherit = "account.invoice"
+class infilefel_account_move(models.Model):
+    _name = "account.move"
+    _inherit = "account.move"
 
     infilefel_export = fields.Boolean('Export')
     infilefel_uuid = fields.Char('Document UUID', copy=False)
@@ -24,20 +24,20 @@ class infilefel_account_invoice(models.Model):
     infilefel_address = fields.Text('SAT person address', copy=False)
 
     @api.multi
-    def action_invoice_open(self):
+    def action_post(self):
         settings = self.env['infilefel.settings'].search([])
         if settings:
             settings.sign_document(self)
         else:
             raise exceptions.UserError(_('InFile FEL settings not found'))
-        ret = super(infilefel_account_invoice, self).action_invoice_open()
+        ret = super(infilefel_account_move, self).action_move_open()
         if ret:
             if self.journal_id.infilefel_type and self.journal_id.infilefel_type != '':
                 self.write({ 'name': self.infilefel_sat_uuid, 'number': '{}-{}'.format(self.infilefel_serial, self.infilefel_number), })
         return ret
 
     @api.multi
-    def infilefel_invoice_void(self):
+    def infilefel_move_void(self):
         settings = self.env['infilefel.settings'].search([])
         for inv in self:
             if inv.infilefel_sat_uuid:
