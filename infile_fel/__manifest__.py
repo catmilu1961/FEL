@@ -15,11 +15,11 @@
     'depends': ['account'],
     'external_dependencies': {'python': ['zeep', 'xmltodict']},
     'data': [
+        "security/ir.model.access.csv",
         'views/infilefel_settings.xml',
         'views/account_tax.xml',
         'views/account_journal.xml',
         'views/account_move.xml',
-        "security/ir.model.access.csv",
     ],
     'installable': True,
     'auto_install': False,

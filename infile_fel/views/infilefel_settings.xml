@@ -49,7 +49,7 @@
             id="infilefel_settings_menu"
             name="InFile FEL settings"
             parent="account.account_management_menu"
-            sequence="400"
+            sequence="100"
             action="infilefel_settings_action_window"
         />
 
