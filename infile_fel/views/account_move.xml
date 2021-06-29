@@ -8,7 +8,7 @@
             <field name="arch" type="xml">
                 <xpath expr="//form/header/button[@name='action_post']" position="after">
                     <button
-                        name="infilefel_invoice_void"
+                        name="infilefel_move_void"
                         string="Void document"
                         type="object"
                         class="oe_highlight"
