@@ -1,0 +1,58 @@
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="infilefel_settings_view">
+            <field name="name">InFile FEL settings</field>
+            <field name="model">infilefel.config.settings</field>
+            <field name="arch" type="xml">
+                <form class="oe_form_configuration" string="InFile FEL settings">
+                    <header>
+                        <button string="Apply" type="object" name="execute" class="oe_highlight"/>
+                        or
+                        <button string="Cancel" type="object" name="cancel" class="oe_link"/>
+                    </header>
+                    <div>
+                        <group string="InFile FEL Settings">
+                            <field name="ws_url_document"/>
+                            <field name="ws_url_void"/>
+                            <field name="ws_url_vat"/>
+                            <field name="ws_timeout"/>
+                            <field name="user"/>
+                            <field name="sign_user"/>
+                            <field name="sign_key"/>
+                            <field name="certification_key"/>
+                            <field name="vat_user"/>
+                            <field name="vat_password"/>
+                            <field name="infile_vat"/>
+                            <field name="certificate_file"/>
+                            <field name="certificate_password"/>
+                            <field name="signing_type"/>
+                            <field name="signer_location" attrs="{'invisible':[('signing_type', '=', 'WS')]}"/>
+                            <field name="ws_url_signer" attrs="{'invisible':[('signing_type', '=', 'LOCAL')]}"/>
+                            <field name="organization_code"/>
+                            <field name="vat_affiliation"/>
+                            <field name="isr_scenery"/>
+                            <field name="isr_phrases"/>
+                        </group>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <record id="infilefel_settings_action_window" model="ir.actions.act_window">
+            <field name="name">InFile FEL settings</field>
+            <field name="res_model">infilefel.config.settings</field>
+            <field name="view_mode">form</field>
+            <field name="target">inline</field>
+        </record>
+
+        <menuitem
+            parent="account.account_management_menu"
+            id="infilefel_settings_menu"
+            name="InFile FEL settings"
+            sequence="100"
+            action="infilefel_settings_action_window"
+            groups="account.group_account_manager"
+        />
+
+    </data>
+</odoo>
