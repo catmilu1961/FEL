@@ -27,9 +27,7 @@ class infilefel_account_move(models.Model):
         settings = self.env['infilefel.settings'].search([])
         if settings:
             settings.sign_document(self)
-        else:
-            raise exceptions.UserError(_('InFile FEL settings not found'))
-        ret = super(infilefel_account_move, self).action_move_open()
+        ret = super(infilefel_account_move, self).action_post()
         if ret:
             if self.journal_id.infilefel_type and self.journal_id.infilefel_type != '':
                 self.write({ 'name': '{}-{}'.format(self.infilefel_serial, self.infilefel_number), })
