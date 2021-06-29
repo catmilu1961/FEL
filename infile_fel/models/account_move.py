@@ -23,7 +23,6 @@ class infilefel_account_move(models.Model):
     infilefel_name = fields.Text('SAT person name', copy=False)
     infilefel_address = fields.Text('SAT person address', copy=False)
 
-    @api.multi
     def action_post(self):
         settings = self.env['infilefel.settings'].search([])
         if settings:
@@ -36,7 +35,6 @@ class infilefel_account_move(models.Model):
                 self.write({ 'name': self.infilefel_sat_uuid, 'number': '{}-{}'.format(self.infilefel_serial, self.infilefel_number), })
         return ret
 
-    @api.multi
     def infilefel_move_void(self):
         settings = self.env['infilefel.settings'].search([])
         for inv in self:

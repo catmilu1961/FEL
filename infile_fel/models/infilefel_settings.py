@@ -92,7 +92,6 @@ class infilefel_settings(models.Model):
                 raise UserError(_('infilefel: Error validating VAT: {}').format(error_message))
         return data
 
-    @api.multi
     def sign_document(self, invoice):
 
         def escape_string(value):
@@ -595,7 +594,6 @@ class infilefel_settings(models.Model):
             else:
                 raise UserError(_('infilefel Signer: {}').format(result['message']))
 
-    @api.multi
     def void_document(self, invoice):
         if not invoice.journal_id.infilefel_type:
             return
@@ -946,7 +944,6 @@ class infilefel_config_settings(models.TransientModel):
     isr_scenery = fields.Char('ISR scenery', default_model='infilefel.config.settings', default=_default_isr_scenery)
     isr_phrases = fields.Char('ISR phrases', default_model='infilefel.config.settings', default=_default_isr_phrases)
 
-    @api.multi
     def execute(self):
         ret = super(infilefel_config_settings, self).execute()
         if ret:
