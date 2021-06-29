@@ -46,11 +46,12 @@
         </record>
 
         <menuitem
+            parent="account.account_management_menu"
             id="infilefel_settings_menu"
             name="InFile FEL settings"
-            parent="account.account_management_menu"
             sequence="100"
             action="infilefel_settings_action_window"
+            groups="account.group_account_manager"
         />
 
     </data>
