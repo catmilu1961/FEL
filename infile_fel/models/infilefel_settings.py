@@ -134,23 +134,10 @@ class infilefel_settings(models.Model):
             if partner_vat in ['C/F', 'C.F', 'C.F.', 'C F']:
                 partner_vat = 'CF'
             partner_name = escape_string(invoice.partner_id.name)
-            partner_address = 'Ciudad'
+            partner_address = invoice.partner_id.street if invoice.partner_id.street else 'Ciudad'
             special_type = ''
-            if partner_vat == 'CF' or (len(partner_vat) == 13 and invoice.journal_id.infilefel_type == 'FESP'):
-                partner_name = invoice.partner_id.name
-                partner_address = invoice.partner_id.street if invoice.partner_id.street else 'Ciudad'
-                if invoice.journal_id.infilefel_type == 'FESP':
-                    special_type = 'TipoEspecial="CUI"'
-            else:
-                partner_data = self.get_customer(partner_vat)
-                if partner_data:
-                    if partner_data['message_type'] == 'E':
-                        raise UserError(_('Error validating VAT {} in InFile: {}').format(partner_vat, partner_data['message']))
-                    else:
-                        partner_name = partner_data['name']
-                        partner_address = partner_data['address']
-                else:
-                    raise UserError(_('VAT {} not found in InFile').format(partner_vat))
+            if len(partner_vat) == 13 and invoice.journal_id.infilefel_type == 'FESP':
+                special_type = 'TipoEspecial="CUI"'
 
             if not invoice.infilefel_uuid:
                 invoice.infilefel_uuid = str(uuid.uuid4())
