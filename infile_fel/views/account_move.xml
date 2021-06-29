@@ -2,8 +2,8 @@
 <odoo>
     <data>
         <record id="infilefel_view_move_form" model="ir.ui.view">
-            <field name="name">infilefel.account.invoice.form</field>
-            <field name="model">account.invoice</field>
+            <field name="name">infilefel.view.move.form</field>
+            <field name="model">account.move</field>
             <field name="inherit_id" ref="account.view_move_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//form/header/button[@name='action_post']" position="after">

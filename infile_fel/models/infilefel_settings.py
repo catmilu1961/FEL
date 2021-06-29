@@ -104,12 +104,11 @@ class infilefel_settings(models.Model):
         store_city = ''
         store_state = ''
         store_country = ''
-        if invoice.journal_id.infilefel_type in ['NCRE', 'NABN', 'FESP'] or not invoice.sbg_warehouse_id:
-            store_address = ((invoice.company_id.street.strip() if invoice.company_id.street else '') + ' ' + (invoice.company_id.street2.strip() if invoice.company_id.street2 else '')).strip()
-            store_zipcode = invoice.company_id.zip if invoice.company_id.zip else '01001'
-            store_city = invoice.company_id.city if invoice.company_id.city else ''
-            store_state = invoice.company_id.state_id.name if invoice.company_id.state_id else ''
-            store_country = invoice.company_id.country_id.code if invoice.company_id.country_id else 'GT'
+        store_address = ((invoice.company_id.street.strip() if invoice.company_id.street else '') + ' ' + (invoice.company_id.street2.strip() if invoice.company_id.street2 else '')).strip()
+        store_zipcode = invoice.company_id.zip if invoice.company_id.zip else '01001'
+        store_city = invoice.company_id.city if invoice.company_id.city else ''
+        store_state = invoice.company_id.state_id.name if invoice.company_id.state_id else ''
+        store_country = invoice.company_id.country_id.code if invoice.company_id.country_id else 'GT'
         if not invoice.journal_id.infilefel_type:
             return
         elif invoice.journal_id.infilefel_type == '':
@@ -119,17 +118,9 @@ class infilefel_settings(models.Model):
             return
         elif not invoice.date_invoice:
             raise UserError(_('Missing document date'))
-        elif not invoice.sbg_warehouse_id and store_address == '':
+        elif store_address == '':
             raise UserError(_('Missing warehouse/address'))
-        elif not invoice.sbg_warehouse_id.partner_id and store_address == '':
-            raise UserError(_('Missing warehouse address'))
         else:
-            if store_address == '':
-                store_address = ((invoice.sbg_warehouse_id.partner_id.street if invoice.sbg_warehouse_id.partner_id.street else '') + ' ' + (invoice.sbg_warehouse_id.partner_id.street2 if invoice.sbg_warehouse_id.partner_id.street2 else '')).strip()
-                store_zipcode = invoice.sbg_warehouse_id.partner_id.zip if invoice.sbg_warehouse_id.partner_id.zip else '01001'
-                store_city = invoice.sbg_warehouse_id.partner_id.city if invoice.sbg_warehouse_id.partner_id.city else ''
-                store_state = invoice.sbg_warehouse_id.partner_id.state_id.name if invoice.sbg_warehouse_id.partner_id.state_id else ''
-                store_country = invoice.sbg_warehouse_id.partner_id.country_id.code if invoice.sbg_warehouse_id.partner_id.country_id else 'GT'
             partner_vat = (invoice.partner_id.vat.replace('-', '') if invoice.partner_id.vat else 'CF').upper()
             if partner_vat in ['C/F', 'C.F', 'C.F.', 'C F']:
                 partner_vat = 'CF'
