@@ -32,7 +32,7 @@ class infilefel_account_move(models.Model):
         ret = super(infilefel_account_move, self).action_move_open()
         if ret:
             if self.journal_id.infilefel_type and self.journal_id.infilefel_type != '':
-                self.write({ 'name': self.infilefel_sat_uuid, 'number': '{}-{}'.format(self.infilefel_serial, self.infilefel_number), })
+                self.write({ 'name': '{}-{}'.format(self.infilefel_serial, self.infilefel_number), })
         return ret
 
     def infilefel_move_void(self):

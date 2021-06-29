@@ -59,7 +59,7 @@
             <field name="inherit_id" ref="account.view_invoice_tree"/>
             <field name="arch" type="xml">
                 <field name="partner_id" position="after">
-                    <field name="number"/>
+                    <field name="infilefel_number"/>
                 </field>
             </field>
         </record>

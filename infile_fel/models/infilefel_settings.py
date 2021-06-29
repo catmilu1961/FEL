@@ -540,7 +540,6 @@ class infilefel_settings(models.Model):
                                 'infilefel_name': partner_name,
                                 'infilefel_address': partner_address,
                                 'name': '{}-{}'.format(result['serie'], result['numero']),
-                                'number': result['numero'],
                             })
                         else:
                             error_message = u''
@@ -683,8 +682,7 @@ class infilefel_settings(models.Model):
                             })
                             invoice.action_invoice_cancel()
                             invoice.write({
-                                'name': invoice.infilefel_sat_uuid,
-                                'number': '{}-{}'.format(invoice.infilefel_serial, invoice.infilefel_number),
+                                'name': '{}-{}'.format(invoice.infilefel_serial, invoice.infilefel_number),
                             })
                         else:
                             error_message = u''
