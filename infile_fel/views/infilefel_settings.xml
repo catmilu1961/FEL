@@ -48,7 +48,7 @@
         <menuitem
             id="infilefel_settings_menu"
             name="InFile FEL settings"
-            parent="account.account_invoicing_menu"
+            parent="account.account_management_menu"
             sequence="500"
             action="infilefel_settings_action_window"
         />
