@@ -165,14 +165,14 @@ class infilefel_settings(models.Model):
                     BienOServicio='S' if line.product_id.type == 'service' else 'B',
                     NumeroLinea=line_number,
                     Cantidad=line.quantity,
-                    UnidadMedida=line.uom_id.name[:3],
+                    UnidadMedida=line.product_uom_id.name[:3],
                     Descripcion='{}|{}'.format(line.product_id.default_code, escape_string(line.product_id.name)),
                     PrecioUnitario=line.price_unit,
                     Precio=line_gross,
                     Descuento=line_discount,
                     TituloImpuestos='' if invoice.journal_id.infilefel_type in ['RDON', 'NABN', 'NDEB'] else '<dte:Impuestos>'
                 )
-                # UnidadMedida = escape_string(line.uom_id.name[:3]),
+                # UnidadMedida = escape_string(line.product_uom_id.name[:3]),
 
                 line_taxes = 0
                 if invoice.journal_id.infilefel_type not in ['RDON', 'NABN', 'NDEB']:
