@@ -145,7 +145,7 @@ class infilefel_settings(models.Model):
             line_number = 0
             for line in invoice.invoice_line_ids:
                 line_number += 1
-                if line.invoice_line_tax_ids:
+                if line.tax_ids:
                     line_gross = round(line.price_unit * line.quantity, 2)
                     line_discount = round(line_gross * line.discount / 100, 2)
                     line_amount = line_gross - line_discount
@@ -176,7 +176,7 @@ class infilefel_settings(models.Model):
 
                 line_taxes = 0
                 if invoice.journal_id.infilefel_type not in ['RDON', 'NABN', 'NDEB']:
-                    for tax_id in line.invoice_line_tax_ids:
+                    for tax_id in line.tax_ids:
                         if tax_id.tipo_impuesto != 'retisr' and tax_id.infilefel_sat_code:
                             amount = 0
                             if invoice.journal_id.infilefel_type not in ['NABN'] and tax_id.amount_type == 'percent':
