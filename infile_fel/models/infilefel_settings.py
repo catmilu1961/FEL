@@ -177,7 +177,7 @@ class infilefel_settings(models.Model):
                 line_taxes = 0
                 if invoice.journal_id.infilefel_type not in ['RDON', 'NABN', 'NDEB']:
                     for tax_id in line.tax_ids:
-                        if tax_id.tipo_impuesto != 'retisr' and tax_id.infilefel_sat_code:
+                        if tax_id.infile_tax_type != 'retisr' and tax_id.infilefel_sat_code:
                             amount = 0
                             if invoice.journal_id.infilefel_type not in ['NABN'] and tax_id.amount_type == 'percent':
                                 amount = round(line_amount * tax_id.amount / (100 + tax_id.amount), 2)
@@ -194,7 +194,7 @@ class infilefel_settings(models.Model):
                                 MontoGravable=line.price_subtotal,
                                 MontoImpuesto=amount
                             )
-                            if tax_id.tipo_impuesto == 'iva':
+                            if tax_id.infile_tax_type == 'iva':
                                 iva_retention += amount
                             tax_added = False
                             for tax_sum in taxes:
