@@ -116,7 +116,7 @@ class infilefel_settings(models.Model):
         elif invoice.infilefel_sat_uuid:
             # raise UserError(_('Document is already signed'))
             return
-        elif not invoice.date_invoice:
+        elif not invoice.date:
             raise UserError(_('Missing document date'))
         elif store_address == '':
             raise UserError(_('Missing warehouse/address'))
@@ -266,8 +266,8 @@ class infilefel_settings(models.Model):
             sign_date_utc = datetime.now().replace(tzinfo=pytz.UTC)
             current_date = sign_date.strftime('%Y-%m-%dT%H:%M:%S-06:00')
             current_time = datetime.now().replace(tzinfo=pytz.UTC).astimezone(pytz.timezone(self.env.user.tz)).strftime('%H:%M:%S-06:00')
-            # invoice_sign_date = invoice.date_invoice + current_time
-            invoice_sign_date = invoice.date_invoice.strftime('%Y-%m-%dT') + current_time
+            # invoice_sign_date = invoice.date + current_time
+            invoice_sign_date = invoice.date.strftime('%Y-%m-%dT') + current_time
             xml = """<?xml version="1.0" encoding="UTF-8"?><dte:GTDocumento Version="0.1" xmlns:dte="http://www.sat.gob.gt/dte/fel/0.2.0" xmlns:xd="http://www.w3.org/2000/09/xmldsig#">
             <dte:SAT ClaseDocumento="dte">
                 <dte:DTE ID="DatosCertificados">
@@ -444,7 +444,7 @@ class infilefel_settings(models.Model):
                     references = references.format(
                         RegimenAnterior=previous_regime,
                         DocumentoOrigen=original_document,
-                        FechaEmision=invoice.refund_invoice_id.date_invoice,
+                        FechaEmision=invoice.refund_invoice_id.date,
                         MotivoAjuste=reason,
                     )
                 else:
@@ -456,7 +456,7 @@ class infilefel_settings(models.Model):
                     references = references.format(
                         RegimenAnterior='RegimenAntiguo="Antiguo"',
                         DocumentoOrigen=invoice.journal_id.infilefel_previous_authorization,
-                        FechaEmision=invoice.date_invoice,
+                        FechaEmision=invoice.date,
                         MotivoAjuste=reason,
                     )
                 extras = extras.format(
@@ -576,7 +576,7 @@ class infilefel_settings(models.Model):
             return
         elif invoice.journal_id.infilefel_type == '':
             return
-        elif not invoice.date_invoice:
+        elif not invoice.date:
             raise UserError(_('Missing document date'))
         else:
             if not invoice.infilefel_void_uuid:
@@ -588,7 +588,7 @@ class infilefel_settings(models.Model):
             current_date = sign_date.strftime('%Y-%m-%dT%H:%M:%S-06:00')
             current_time = datetime.now().replace(tzinfo=pytz.UTC).astimezone(pytz.timezone(self.env.user.tz)).strftime('%H:%M:%S-06:00')
             invoice_sign_date = invoice.infilefel_sign_date.strftime('%Y-%m-%dT%H:%M:%S-06:00')
-            # void_sign_date = invoice.date_invoice.strftime('%Y-%m-%dT') + current_time
+            # void_sign_date = invoice.date.strftime('%Y-%m-%dT') + current_time
             void_sign_date = datetime.now().replace(tzinfo=pytz.UTC).astimezone(pytz.timezone(self.env.user.tz)).strftime('%Y-%m-%dT%H:%M:%S-06:00')
             partner_vat = (invoice.partner_id.vat.replace('-', '') if invoice.partner_id.vat else 'CF').upper()
             if partner_vat in ['C/F', 'C.F', 'C.F.', 'C F']:
