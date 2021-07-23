@@ -35,7 +35,7 @@ msgstr "Cuenta TaxCloud"
 #. module: infile_fel
 #: model:ir.model.fields,help:infile_fel.field_infilefel_config_settings__account_cash_basis_base_account_id
 msgid "Account that will be set on lines created in cash basis journal entry and used to keep track of the tax base amount."
-msgstr ""
+msgstr "Account that will be set on lines created in cash basis journal entry and used to keep track of the tax base amount."
 
 #. module: infile_fel
 #: model:ir.model.fields,field_description:infile_fel.field_infilefel_config_settings__module_account_accountant

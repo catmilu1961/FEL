@@ -6,3 +6,4 @@ class infilefel_account_tax(models.Model):
     _inherit = "account.tax"
 
     infilefel_sat_code = fields.Char('SAT Code')
+    infile_tax_type = fields.Char('Tax type')
