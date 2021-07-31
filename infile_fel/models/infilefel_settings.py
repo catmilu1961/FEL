@@ -265,9 +265,11 @@ class infilefel_settings(models.Model):
             sign_date = datetime.now().replace(tzinfo=pytz.UTC).astimezone(pytz.timezone(self.env.user.tz))
             sign_date_utc = datetime.now().replace(tzinfo=pytz.UTC)
             current_date = sign_date.strftime('%Y-%m-%dT%H:%M:%S-06:00')
-            current_time = datetime.now().replace(tzinfo=pytz.UTC).astimezone(pytz.timezone(self.env.user.tz)).strftime('%H:%M:%S-06:00')
+            # current_time = datetime.now().replace(tzinfo=pytz.UTC).astimezone(pytz.timezone(self.env.user.tz)).strftime('%H:%M:%S-06:00')
+            current_time = datetime.now().replace(tzinfo=pytz.UTC).astimezone(pytz.timezone(self.env.user.tz)).strftime('%H:%M:%S')
             # invoice_sign_date = invoice.date + current_time
-            invoice_sign_date = invoice.date.strftime('%Y-%m-%dT') + current_time
+            # invoice_sign_date = invoice.date.strftime('%Y-%m-%dT') + current_time
+            invoice_sign_date = "{} {}".format(invoice.date.strftime('%Y-%m-%d'), current_time)
             xml = """<?xml version="1.0" encoding="UTF-8"?><dte:GTDocumento Version="0.1" xmlns:dte="http://www.sat.gob.gt/dte/fel/0.2.0" xmlns:xd="http://www.w3.org/2000/09/xmldsig#">
             <dte:SAT ClaseDocumento="dte">
                 <dte:DTE ID="DatosCertificados">
@@ -521,7 +523,7 @@ class infilefel_settings(models.Model):
                 }
                 data = {
                     'nit_emisor': invoice.company_id.vat.replace('-', '') if invoice.company_id.vat else 'C/F',
-                    'correo_copia': 'ORamirezO@gmail.com',
+                    'correo_copia': invoice.company_id.email or 'ORamirezO@gmail.com',
                     'xml_dte': xmlb64
                 }
                 try:
@@ -567,7 +569,7 @@ class infilefel_settings(models.Model):
                         error_message = e.name
                     else:
                         error_message = e
-                    raise UserError(_('infilefel: Error consuming web service: {}').format(error_message))
+                    raise UserError(_('infilefel: Exception consuming web service: {}').format(error_message))
             else:
                 raise UserError(_('infilefel Signer: {}').format(result['message']))
 
@@ -589,7 +591,7 @@ class infilefel_settings(models.Model):
             current_time = datetime.now().replace(tzinfo=pytz.UTC).astimezone(pytz.timezone(self.env.user.tz)).strftime('%H:%M:%S-06:00')
             invoice_sign_date = invoice.infilefel_sign_date.strftime('%Y-%m-%dT%H:%M:%S-06:00')
             # void_sign_date = invoice.date.strftime('%Y-%m-%dT') + current_time
-            void_sign_date = datetime.now().replace(tzinfo=pytz.UTC).astimezone(pytz.timezone(self.env.user.tz)).strftime('%Y-%m-%dT%H:%M:%S-06:00')
+            void_sign_date = datetime.now().replace(tzinfo=pytz.UTC).astimezone(pytz.timezone(self.env.user.tz)).strftime('%Y-%m-%d %H:%M:%S')
             partner_vat = (invoice.partner_id.vat.replace('-', '') if invoice.partner_id.vat else 'CF').upper()
             if partner_vat in ['C/F', 'C.F', 'C.F.', 'C F']:
                 partner_vat = 'CF'
@@ -664,7 +666,7 @@ class infilefel_settings(models.Model):
                 }
                 data = {
                     'nit_emisor': invoice.company_id.vat.replace('-', '') if invoice.company_id.vat else 'C/F',
-                    'correo_copia': 'ORamirezO@gmail.com',
+                    'correo_copia': invoice.company_id.vat.email or 'ORamirezO@gmail.com',
                     'xml_dte': xmlb64
                 }
                 # data = '<?xml version="1.0" encoding="UTF-8" standalone="no"?><AnulaDocumentoXMLRequest id="{}"><xml_dte><![CDATA[{}]]></xml_dte></AnulaDocumentoXMLRequest>'.format(
@@ -680,7 +682,7 @@ class infilefel_settings(models.Model):
                                 'infilefel_void_signed_xml': xml,
                                 'infilefel_void_result_xml': result['xml_certificado'],
                             })
-                            invoice.action_invoice_cancel()
+                            invoice.button_cancel()
                             invoice.write({
                                 'name': '{}-{}'.format(invoice.infilefel_serial, invoice.infilefel_number),
                             })
