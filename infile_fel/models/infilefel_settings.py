@@ -591,7 +591,7 @@ class infilefel_settings(models.Model):
             current_time = datetime.now().replace(tzinfo=pytz.UTC).astimezone(pytz.timezone(self.env.user.tz)).strftime('%H:%M:%S-06:00')
             invoice_sign_date = invoice.infilefel_sign_date.strftime('%Y-%m-%dT%H:%M:%S-06:00')
             # void_sign_date = invoice.date.strftime('%Y-%m-%dT') + current_time
-            void_sign_date = datetime.now().replace(tzinfo=pytz.UTC).astimezone(pytz.timezone(self.env.user.tz)).strftime('%Y-%m-%dT%H:%M:%S-06:00')
+            void_sign_date = datetime.now().replace(tzinfo=pytz.UTC).astimezone(pytz.timezone(self.env.user.tz)).strftime('%Y-%m-%d %H:%M:%S')
             partner_vat = (invoice.partner_id.vat.replace('-', '') if invoice.partner_id.vat else 'CF').upper()
             if partner_vat in ['C/F', 'C.F', 'C.F.', 'C F']:
                 partner_vat = 'CF'
