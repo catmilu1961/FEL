@@ -265,11 +265,11 @@ class infilefel_settings(models.Model):
             sign_date = datetime.now().replace(tzinfo=pytz.UTC).astimezone(pytz.timezone(self.env.user.tz))
             sign_date_utc = datetime.now().replace(tzinfo=pytz.UTC)
             current_date = sign_date.strftime('%Y-%m-%dT%H:%M:%S-06:00')
-            # current_time = datetime.now().replace(tzinfo=pytz.UTC).astimezone(pytz.timezone(self.env.user.tz)).strftime('%H:%M:%S-06:00')
-            current_time = datetime.now().replace(tzinfo=pytz.UTC).astimezone(pytz.timezone(self.env.user.tz)).strftime('%H:%M:%S')
+            current_time = datetime.now().replace(tzinfo=pytz.UTC).astimezone(pytz.timezone(self.env.user.tz)).strftime('%H:%M:%S-06:00')
+            # current_time = datetime.now().replace(tzinfo=pytz.UTC).astimezone(pytz.timezone(self.env.user.tz)).strftime('%H:%M:%S')
             # invoice_sign_date = invoice.date + current_time
-            # invoice_sign_date = invoice.date.strftime('%Y-%m-%dT') + current_time
-            invoice_sign_date = "{} {}".format(invoice.date.strftime('%Y-%m-%d'), current_time)
+            invoice_sign_date = invoice.date.strftime('%Y-%m-%dT') + current_time
+            # invoice_sign_date = "{} {}".format(invoice.date.strftime('%Y-%m-%d'), current_time)
             xml = """<?xml version="1.0" encoding="UTF-8"?><dte:GTDocumento Version="0.1" xmlns:dte="http://www.sat.gob.gt/dte/fel/0.2.0" xmlns:xd="http://www.w3.org/2000/09/xmldsig#">
             <dte:SAT ClaseDocumento="dte">
                 <dte:DTE ID="DatosCertificados">
