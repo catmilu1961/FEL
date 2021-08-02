@@ -528,34 +528,6 @@ class infilefel_settings(models.Model):
                 }
                 try:
                     response = requests.post(self.ws_url_document, headers=headers, data=json.dumps(data))
-                    if response.ok:
-                        result = json.loads(response.text)
-                        if result['resultado']:
-                            invoice.write({
-                                'infilefel_sign_date': invoice_sign_date,
-                                'infilefel_sat_uuid': result['uuid'],
-                                'infilefel_source_xml': source_xml,
-                                'infilefel_signed_xml': xml,
-                                'infilefel_serial': result['serie'],
-                                'infilefel_number': result['numero'],
-                                'infilefel_vat': partner_vat,
-                                'infilefel_name': partner_name,
-                                'infilefel_address': partner_address,
-                                'name': '{}-{}'.format(result['serie'], result['numero']),
-                            })
-                        else:
-                            error_message = u''
-                            if type(result['descripcion_errores']) is list:
-                                for message in result['descripcion_errores']:
-                                    error_message += '\n{}: {}'.format(message['fuente'], message['mensaje_error'])
-                            else:
-                                error_message += '\n{}: {}'.format(
-                                    result['RegistraDocumentoXMLResponse']['listado_errores']['error']['cod_error'],
-                                    result['RegistraDocumentoXMLResponse']['listado_errores']['error']['desc_error'])
-                            raise UserError(error_message + '\n' + xml)
-                    else:
-                        raise UserError(
-                            _('infilefel: Response error consuming web service: {}').format(str(response.text)))
                 except Exception as e:
                     error_message = ''
                     if hasattr(e, 'object'):
@@ -570,6 +542,34 @@ class infilefel_settings(models.Model):
                     else:
                         error_message = e
                     raise UserError(_('infilefel: Exception consuming web service: {}').format(error_message))
+                if response.ok:
+                    result = json.loads(response.text)
+                    if result['resultado']:
+                        invoice.write({
+                            'infilefel_sign_date': invoice_sign_date,
+                            'infilefel_sat_uuid': result['uuid'],
+                            'infilefel_source_xml': source_xml,
+                            'infilefel_signed_xml': xml,
+                            'infilefel_serial': result['serie'],
+                            'infilefel_number': result['numero'],
+                            'infilefel_vat': partner_vat,
+                            'infilefel_name': partner_name,
+                            'infilefel_address': partner_address,
+                            'name': '{}-{}'.format(result['serie'], result['numero']),
+                        })
+                    else:
+                        error_message = u''
+                        if type(result['descripcion_errores']) is list:
+                            for message in result['descripcion_errores']:
+                                error_message += '\n{}: {}'.format(message['fuente'], message['mensaje_error'])
+                        else:
+                            error_message += '\n{}: {}'.format(
+                                result['RegistraDocumentoXMLResponse']['listado_errores']['error']['cod_error'],
+                                result['RegistraDocumentoXMLResponse']['listado_errores']['error']['desc_error'])
+                        raise UserError(error_message + '\n' + xml)
+                else:
+                    raise UserError(
+                        _('infilefel: Response error consuming web service: {}').format(str(response.text)))
             else:
                 raise UserError(_('infilefel Signer: {}').format(result['message']))
 
