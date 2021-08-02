@@ -266,10 +266,11 @@ class infilefel_settings(models.Model):
             sign_date_utc = datetime.now().replace(tzinfo=pytz.UTC)
             current_date = sign_date.strftime('%Y-%m-%dT%H:%M:%S-06:00')
             current_time = datetime.now().replace(tzinfo=pytz.UTC).astimezone(pytz.timezone(self.env.user.tz)).strftime('%H:%M:%S-06:00')
+            current_time_write = datetime.now().replace(tzinfo=pytz.UTC).astimezone(pytz.timezone(self.env.user.tz)).strftime('%H:%M:%S')
             # current_time = datetime.now().replace(tzinfo=pytz.UTC).astimezone(pytz.timezone(self.env.user.tz)).strftime('%H:%M:%S')
             # invoice_sign_date = invoice.date + current_time
             invoice_sign_date = invoice.date.strftime('%Y-%m-%dT') + current_time
-            # invoice_sign_date = "{} {}".format(invoice.date.strftime('%Y-%m-%d'), current_time)
+            invoice_sign_date_write = "{} {}".format(invoice.date.strftime('%Y-%m-%d'), current_time_write)
             xml = """<?xml version="1.0" encoding="UTF-8"?><dte:GTDocumento Version="0.1" xmlns:dte="http://www.sat.gob.gt/dte/fel/0.2.0" xmlns:xd="http://www.w3.org/2000/09/xmldsig#">
             <dte:SAT ClaseDocumento="dte">
                 <dte:DTE ID="DatosCertificados">
@@ -546,7 +547,7 @@ class infilefel_settings(models.Model):
                     result = json.loads(response.text)
                     if result['resultado']:
                         invoice.write({
-                            'infilefel_sign_date': invoice_sign_date,
+                            'infilefel_sign_date': invoice_sign_date_write,
                             'infilefel_sat_uuid': result['uuid'],
                             'infilefel_source_xml': source_xml,
                             'infilefel_signed_xml': xml,
@@ -591,7 +592,7 @@ class infilefel_settings(models.Model):
             current_time = datetime.now().replace(tzinfo=pytz.UTC).astimezone(pytz.timezone(self.env.user.tz)).strftime('%H:%M:%S-06:00')
             invoice_sign_date = invoice.infilefel_sign_date.strftime('%Y-%m-%dT%H:%M:%S-06:00')
             # void_sign_date = invoice.date.strftime('%Y-%m-%dT') + current_time
-            void_sign_date = datetime.now().replace(tzinfo=pytz.UTC).astimezone(pytz.timezone(self.env.user.tz)).strftime('%Y-%m-%d %H:%M:%S')
+            void_sign_date = datetime.now().replace(tzinfo=pytz.UTC).astimezone(pytz.timezone(self.env.user.tz)).strftime('%Y-%m-%dT%H:%M:%S-06:00')
             partner_vat = (invoice.partner_id.vat.replace('-', '') if invoice.partner_id.vat else 'CF').upper()
             if partner_vat in ['C/F', 'C.F', 'C.F.', 'C F']:
                 partner_vat = 'CF'
@@ -666,7 +667,7 @@ class infilefel_settings(models.Model):
                 }
                 data = {
                     'nit_emisor': invoice.company_id.vat.replace('-', '') if invoice.company_id.vat else 'C/F',
-                    'correo_copia': invoice.company_id.vat.email or 'ORamirezO@gmail.com',
+                    'correo_copia': invoice.company_id.email or 'ORamirezO@gmail.com',
                     'xml_dte': xmlb64
                 }
                 # data = '<?xml version="1.0" encoding="UTF-8" standalone="no"?><AnulaDocumentoXMLRequest id="{}"><xml_dte><![CDATA[{}]]></xml_dte></AnulaDocumentoXMLRequest>'.format(
