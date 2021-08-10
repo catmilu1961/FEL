@@ -144,98 +144,99 @@ class infilefel_settings(models.Model):
             taxes = []
             line_number = 0
             for line in invoice.invoice_line_ids:
-                line_number += 1
-                if line.tax_ids:
-                    line_gross = round(line.price_unit * line.quantity, 2)
-                    line_discount = round(line_gross * line.discount / 100, 2)
-                    line_amount = line_gross - line_discount
-                else:
-                    line_gross = line.price_subtotal
-                    line_discount = round(line_gross * line.discount / 100, 2)
-                    line_amount = line_gross - line_discount
-                isr_retention += line_amount
+                if line.product_id:
+                    line_number += 1
+                    if line.tax_ids:
+                        line_gross = round(line.price_unit * line.quantity, 2)
+                        line_discount = round(line_gross * line.discount / 100, 2)
+                        line_amount = line_gross - line_discount
+                    else:
+                        line_gross = line.price_subtotal
+                        line_discount = round(line_gross * line.discount / 100, 2)
+                        line_amount = line_gross - line_discount
+                    isr_retention += line_amount
 
-                xml_lines += """<dte:Item BienOServicio="{BienOServicio}" NumeroLinea="{NumeroLinea}">
-                        <dte:Cantidad>{Cantidad}</dte:Cantidad>
-                        <dte:UnidadMedida>{UnidadMedida}</dte:UnidadMedida>
-                        <dte:Descripcion>{Descripcion}</dte:Descripcion>
-                        <dte:PrecioUnitario>{PrecioUnitario}</dte:PrecioUnitario>
-                        <dte:Precio>{Precio}</dte:Precio>
-                        <dte:Descuento>{Descuento}</dte:Descuento>{TituloImpuestos}""".format(
-                    BienOServicio='S' if line.product_id.type == 'service' else 'B',
-                    NumeroLinea=line_number,
-                    Cantidad=line.quantity,
-                    UnidadMedida=line.product_uom_id.name[:3],
-                    Descripcion='{}|{}'.format(line.product_id.default_code, escape_string(line.product_id.name)),
-                    PrecioUnitario=line.price_unit,
-                    Precio=line_gross,
-                    Descuento=line_discount,
-                    TituloImpuestos='' if invoice.journal_id.infilefel_type in ['RDON', 'NABN', 'NDEB'] else '<dte:Impuestos>'
-                )
-                # UnidadMedida = escape_string(line.product_uom_id.name[:3]),
-
-                line_taxes = 0
-                if invoice.journal_id.infilefel_type not in ['RDON', 'NABN', 'NDEB']:
-                    for tax_id in line.tax_ids:
-                        if tax_id.infile_tax_type != 'retisr' and tax_id.infilefel_sat_code:
-                            amount = 0
-                            if invoice.journal_id.infilefel_type not in ['NABN'] and tax_id.amount_type == 'percent':
-                                amount = round(line_amount * tax_id.amount / (100 + tax_id.amount), 2)
-                            line_taxes += amount
-                            xml_lines += """<dte:Impuesto>
-                                    <dte:NombreCorto>{NombreCorto}</dte:NombreCorto>
-                                    <dte:CodigoUnidadGravable>{CodigoUnidadGravable}</dte:CodigoUnidadGravable>
-                                    <dte:MontoGravable>{MontoGravable}</dte:MontoGravable>
-                                    <dte:MontoImpuesto>{MontoImpuesto}</dte:MontoImpuesto>
-                                </dte:Impuesto>
-                            """.format(
-                                NombreCorto=tax_id.infilefel_sat_code,
-                                CodigoUnidadGravable='1',
-                                MontoGravable=line.price_subtotal,
-                                MontoImpuesto=amount
-                            )
-                            if tax_id.infile_tax_type == 'iva':
-                                iva_retention += amount
-                            tax_added = False
-                            for tax_sum in taxes:
-                                if tax_sum['NombreCorto'] == tax_id.infilefel_sat_code:
-                                    tax_added = True
-                                    tax_sum['Valor'] += amount
-                            if not tax_added:
-                                taxes.append({
-                                    'NombreCorto': tax_id.infilefel_sat_code,
-                                    'Valor': amount
-                                })
-                if invoice.journal_id.infilefel_type not in ['RDON', 'NABN', 'NDEB'] and line_taxes == 0:
-                    excempt = True
-                    xml_lines += """<dte:Impuesto>
-                            <dte:NombreCorto>{NombreCorto}</dte:NombreCorto>
-                            <dte:CodigoUnidadGravable>{CodigoUnidadGravable}</dte:CodigoUnidadGravable>
-                            <dte:MontoGravable>{MontoGravable}</dte:MontoGravable>
-                            <dte:MontoImpuesto>{MontoImpuesto}</dte:MontoImpuesto>
-                        </dte:Impuesto>
-                    """.format(
-                        NombreCorto='IVA',
-                        CodigoUnidadGravable='2',
-                        MontoGravable=line.price_subtotal,
-                        MontoImpuesto=0
+                    xml_lines += """<dte:Item BienOServicio="{BienOServicio}" NumeroLinea="{NumeroLinea}">
+                            <dte:Cantidad>{Cantidad}</dte:Cantidad>
+                            <dte:UnidadMedida>{UnidadMedida}</dte:UnidadMedida>
+                            <dte:Descripcion>{Descripcion}</dte:Descripcion>
+                            <dte:PrecioUnitario>{PrecioUnitario}</dte:PrecioUnitario>
+                            <dte:Precio>{Precio}</dte:Precio>
+                            <dte:Descuento>{Descuento}</dte:Descuento>{TituloImpuestos}""".format(
+                        BienOServicio='S' if line.product_id.type == 'service' else 'B',
+                        NumeroLinea=line_number,
+                        Cantidad=line.quantity,
+                        UnidadMedida=line.product_uom_id.name[:3],
+                        Descripcion='{}|{}'.format(line.product_id.default_code, escape_string(line.product_id.name)),
+                        PrecioUnitario=line.price_unit,
+                        Precio=line_gross,
+                        Descuento=line_discount,
+                        TituloImpuestos='' if invoice.journal_id.infilefel_type in ['RDON', 'NABN', 'NDEB'] else '<dte:Impuestos>'
                     )
-                    tax_added = False
-                    for tax_sum in taxes:
-                        if tax_sum['NombreCorto'] == 'IVA':
-                            tax_added = True
-                            tax_sum['Valor'] += 0
-                    if not tax_added:
-                        taxes.append({
-                            'NombreCorto': 'IVA',
-                            'Valor': 0
-                        })
+                    # UnidadMedida = escape_string(line.product_uom_id.name[:3]),
 
-                xml_lines += """{TituloImpuestos}
-                        <dte:Total>{Total}</dte:Total>
-                    </dte:Item>
-                """.format(TituloImpuestos='' if invoice.journal_id.infilefel_type in ['RDON', 'NABN', 'NDEB'] else '</dte:Impuestos>',
-                           Total=line_amount)
+                    line_taxes = 0
+                    if invoice.journal_id.infilefel_type not in ['RDON', 'NABN', 'NDEB']:
+                        for tax_id in line.tax_ids:
+                            if tax_id.infile_tax_type != 'retisr' and tax_id.infilefel_sat_code:
+                                amount = 0
+                                if invoice.journal_id.infilefel_type not in ['NABN'] and tax_id.amount_type == 'percent':
+                                    amount = round(line_amount * tax_id.amount / (100 + tax_id.amount), 2)
+                                line_taxes += amount
+                                xml_lines += """<dte:Impuesto>
+                                        <dte:NombreCorto>{NombreCorto}</dte:NombreCorto>
+                                        <dte:CodigoUnidadGravable>{CodigoUnidadGravable}</dte:CodigoUnidadGravable>
+                                        <dte:MontoGravable>{MontoGravable}</dte:MontoGravable>
+                                        <dte:MontoImpuesto>{MontoImpuesto}</dte:MontoImpuesto>
+                                    </dte:Impuesto>
+                                """.format(
+                                    NombreCorto=tax_id.infilefel_sat_code,
+                                    CodigoUnidadGravable='1',
+                                    MontoGravable=line.price_subtotal,
+                                    MontoImpuesto=amount
+                                )
+                                if tax_id.infile_tax_type == 'iva':
+                                    iva_retention += amount
+                                tax_added = False
+                                for tax_sum in taxes:
+                                    if tax_sum['NombreCorto'] == tax_id.infilefel_sat_code:
+                                        tax_added = True
+                                        tax_sum['Valor'] += amount
+                                if not tax_added:
+                                    taxes.append({
+                                        'NombreCorto': tax_id.infilefel_sat_code,
+                                        'Valor': amount
+                                    })
+                    if invoice.journal_id.infilefel_type not in ['RDON', 'NABN', 'NDEB'] and line_taxes == 0:
+                        excempt = True
+                        xml_lines += """<dte:Impuesto>
+                                <dte:NombreCorto>{NombreCorto}</dte:NombreCorto>
+                                <dte:CodigoUnidadGravable>{CodigoUnidadGravable}</dte:CodigoUnidadGravable>
+                                <dte:MontoGravable>{MontoGravable}</dte:MontoGravable>
+                                <dte:MontoImpuesto>{MontoImpuesto}</dte:MontoImpuesto>
+                            </dte:Impuesto>
+                        """.format(
+                            NombreCorto='IVA',
+                            CodigoUnidadGravable='2',
+                            MontoGravable=line.price_subtotal,
+                            MontoImpuesto=0
+                        )
+                        tax_added = False
+                        for tax_sum in taxes:
+                            if tax_sum['NombreCorto'] == 'IVA':
+                                tax_added = True
+                                tax_sum['Valor'] += 0
+                        if not tax_added:
+                            taxes.append({
+                                'NombreCorto': 'IVA',
+                                'Valor': 0
+                            })
+
+                    xml_lines += """{TituloImpuestos}
+                            <dte:Total>{Total}</dte:Total>
+                        </dte:Item>
+                    """.format(TituloImpuestos='' if invoice.journal_id.infilefel_type in ['RDON', 'NABN', 'NDEB'] else '</dte:Impuestos>',
+                               Total=line_amount)
 
             #
             # Frases
