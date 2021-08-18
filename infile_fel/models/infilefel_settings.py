@@ -104,11 +104,38 @@ class infilefel_settings(models.Model):
         store_city = ''
         store_state = ''
         store_country = ''
-        store_address = ((invoice.company_id.street.strip() if invoice.company_id.street else '') + ' ' + (invoice.company_id.street2.strip() if invoice.company_id.street2 else '')).strip()
-        store_zipcode = invoice.company_id.zip if invoice.company_id.zip else '01001'
-        store_city = invoice.company_id.city if invoice.company_id.city else ''
-        store_state = invoice.company_id.state_id.name if invoice.company_id.state_id else ''
-        store_country = invoice.company_id.country_id.code if invoice.company_id.country_id else 'GT'
+        commercial_name = ''
+        if invoice.pos_order_ids:
+            for pos_order in invoice.pos_order_ids:
+                if invoice.pos_order.picking_type_id:
+                    if invoice.pos_order.picking_type_id.warehouse_id:
+                        if invoice.pos_order.picking_type_id.warehouse_id.partner_id:
+                            store_address = ((invoice.pos_order.picking_type_id.warehouse_id.partner_id.street.strip() if invoice.pos_order.picking_type_id.warehouse_id.partner_id.street else '') + ' ' + (
+                                invoice.pos_order.picking_type_id.warehouse_id.partner_id.street2.strip() if invoice.pos_order.picking_type_id.warehouse_id.partner_id.street2 else '')).strip()
+                            store_zipcode = invoice.pos_order.picking_type_id.warehouse_id.partner_id.zip if invoice.pos_order.picking_type_id.warehouse_id.partner_id.zip else '01001'
+                            store_city = invoice.pos_order.picking_type_id.warehouse_id.partner_id.city if invoice.pos_order.picking_type_id.warehouse_id.partner_id.city else ''
+                            store_state = invoice.pos_order.picking_type_id.warehouse_id.partner_id.state_id.name if invoice.pos_order.picking_type_id.warehouse_id.partner_id.state_id else ''
+                            store_country = invoice.pos_order.picking_type_id.warehouse_id.partner_id.country_id.code if invoice.pos_order.picking_type_id.warehouse_id.partner_id.country_id else 'GT'
+                            commercial_name = invoice.pos_order.picking_type_id.warehouse_id.partner_id.name
+        elif invoice.invoice_origin:
+            sale_ids = self.env['sale.order'].search([('name', '=', invoice.invoice_origin)])
+            for sale_id in sale_ids:
+                if sale_id.warehouse_id:
+                    if sale_id.warehouse_id.partner_id:
+                        store_address = ((sale_id.warehouse_id.partner_id.street.strip() if sale_id.warehouse_id.partner_id.street else '') + ' ' + (
+                            sale_id.warehouse_id.partner_id.street2.strip() if sale_id.warehouse_id.partner_id.street2 else '')).strip()
+                        store_zipcode = sale_id.warehouse_id.partner_id.zip if sale_id.warehouse_id.partner_id.zip else '01001'
+                        store_city = sale_id.warehouse_id.partner_id.city if sale_id.warehouse_id.partner_id.city else ''
+                        store_state = sale_id.warehouse_id.partner_id.state_id.name if sale_id.warehouse_id.partner_id.state_id else ''
+                        store_country = sale_id.warehouse_id.partner_id.country_id.code if sale_id.warehouse_id.partner_id.country_id else 'GT'
+                        commercial_name = sale_id.warehouse_id.partner_id.name
+        if store_address == '':
+            store_address = ((invoice.company_id.street.strip() if invoice.company_id.street else '') + ' ' + (invoice.company_id.street2.strip() if invoice.company_id.street2 else '')).strip()
+            store_zipcode = invoice.company_id.zip if invoice.company_id.zip else '01001'
+            store_city = invoice.company_id.city if invoice.company_id.city else ''
+            store_state = invoice.company_id.state_id.name if invoice.company_id.state_id else ''
+            store_country = invoice.company_id.country_id.code if invoice.company_id.country_id else 'GT'
+            commercial_name = invoice.company_id.name
         if not invoice.journal_id.infilefel_type:
             return
         elif invoice.journal_id.infilefel_type == '':
@@ -311,7 +338,7 @@ class infilefel_settings(models.Model):
                 CodigoEstablecimiento=invoice.journal_id.infilefel_organization_code,
                 CorreoEmisor=invoice.company_id.email if invoice.company_id.email else '',
                 NITEmisor=invoice.company_id.vat.replace('-', '') if invoice.company_id.vat else 'C/F',
-                NombreComercial=escape_string(invoice.company_id.name),
+                NombreComercial=escape_string(commercial_name),
                 NombreEmisor=escape_string(invoice.company_id.name),
                 DireccionEmisor=escape_string(store_address),
                 CodigoPostalEmisor=store_zipcode,
