@@ -23,11 +23,21 @@ class infilefel_account_move(models.Model):
     infilefel_name = fields.Text('SAT person name', copy=False)
     infilefel_address = fields.Text('SAT person address', copy=False)
 
-    def action_post(self):
+    # def action_post(self):
+    #     settings = self.env['infilefel.settings'].search([])
+    #     if settings:
+    #         settings.sign_document(self)
+    #     ret = super(infilefel_account_move, self).action_post()
+    #     if ret:
+    #         if self.journal_id.infilefel_type and self.journal_id.infilefel_type != '':
+    #             self.write({ 'name': '{}-{}'.format(self.infilefel_serial, self.infilefel_number), })
+    #     return ret
+
+    def _post(self, soft=True):
         settings = self.env['infilefel.settings'].search([])
         if settings:
             settings.sign_document(self)
-        ret = super(infilefel_account_move, self).action_post()
+        ret = super(infilefel_account_move, self)._post(soft)
         if ret:
             if self.journal_id.infilefel_type and self.journal_id.infilefel_type != '':
                 self.write({ 'name': '{}-{}'.format(self.infilefel_serial, self.infilefel_number), })
