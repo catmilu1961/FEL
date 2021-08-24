@@ -20,7 +20,7 @@
                     <field name="infilefel_export"/>
                 </field>
                 <xpath expr="//form//sheet/notebook" position="inside">
-                    <page name="infilefel" string="FEL Data" attrs="{'invisible':[('infilefel_uuid', '=', False)]}">
+                    <page name="infilefel" string="FEL Data" attrs="{'invisible':[('infilefel_sat_uuid', '=', False)]}">
                         <notebook name="infilefel_data">
                             <page name="infilefel_invoice_data" string="FEL Invoice data">
                                 <group>
