@@ -159,6 +159,8 @@ class infilefel_settings(models.Model):
 
             if not invoice.infilefel_uuid:
                 invoice.infilefel_uuid = str(uuid.uuid4())
+            if invoice.infilefel_uuid.strip() == '':
+                invoice.infilefel_uuid = str(uuid.uuid4())
 
             #
             # Líneas del documento
