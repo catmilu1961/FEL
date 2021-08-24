@@ -12,7 +12,7 @@
     'category': 'Sales',
     'sequence': 20,
     'version': '0.1',
-    'depends': ['account'],
+    'depends': ['account', 'point_of_sale'],
     'external_dependencies': {'python': ['zeep', 'xmltodict']},
     'data': [
         "security/ir.model.access.csv",
