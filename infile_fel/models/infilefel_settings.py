@@ -107,9 +107,9 @@ class infilefel_settings(models.Model):
         commercial_name = ''
         if invoice.pos_order_ids:
             for pos_order in invoice.pos_order_ids:
-                if invoice.pos_order.picking_type_id:
-                    if invoice.pos_order.picking_type_id.warehouse_id:
-                        if invoice.pos_order.picking_type_id.warehouse_id.partner_id:
+                if pos_order.picking_type_id:
+                    if pos_order.picking_type_id.warehouse_id:
+                        if pos_order.picking_type_id.warehouse_id.partner_id:
                             store_address = ((invoice.pos_order.picking_type_id.warehouse_id.partner_id.street.strip() if invoice.pos_order.picking_type_id.warehouse_id.partner_id.street else '') + ' ' + (
                                 invoice.pos_order.picking_type_id.warehouse_id.partner_id.street2.strip() if invoice.pos_order.picking_type_id.warehouse_id.partner_id.street2 else '')).strip()
                             store_zipcode = invoice.pos_order.picking_type_id.warehouse_id.partner_id.zip if invoice.pos_order.picking_type_id.warehouse_id.partner_id.zip else '01001'
