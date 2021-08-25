@@ -110,13 +110,13 @@ class infilefel_settings(models.Model):
                 if pos_order.picking_type_id:
                     if pos_order.picking_type_id.warehouse_id:
                         if pos_order.picking_type_id.warehouse_id.partner_id:
-                            store_address = ((invoice.pos_order.picking_type_id.warehouse_id.partner_id.street.strip() if invoice.pos_order.picking_type_id.warehouse_id.partner_id.street else '') + ' ' + (
-                                invoice.pos_order.picking_type_id.warehouse_id.partner_id.street2.strip() if invoice.pos_order.picking_type_id.warehouse_id.partner_id.street2 else '')).strip()
-                            store_zipcode = invoice.pos_order.picking_type_id.warehouse_id.partner_id.zip if invoice.pos_order.picking_type_id.warehouse_id.partner_id.zip else '01001'
-                            store_city = invoice.pos_order.picking_type_id.warehouse_id.partner_id.city if invoice.pos_order.picking_type_id.warehouse_id.partner_id.city else ''
-                            store_state = invoice.pos_order.picking_type_id.warehouse_id.partner_id.state_id.name if invoice.pos_order.picking_type_id.warehouse_id.partner_id.state_id else ''
-                            store_country = invoice.pos_order.picking_type_id.warehouse_id.partner_id.country_id.code if invoice.pos_order.picking_type_id.warehouse_id.partner_id.country_id else 'GT'
-                            commercial_name = invoice.pos_order.picking_type_id.warehouse_id.partner_id.name
+                            store_address = ((pos_order.picking_type_id.warehouse_id.partner_id.street.strip() if pos_order.picking_type_id.warehouse_id.partner_id.street else '') + ' ' + (
+                                pos_order.picking_type_id.warehouse_id.partner_id.street2.strip() if pos_order.picking_type_id.warehouse_id.partner_id.street2 else '')).strip()
+                            store_zipcode = pos_order.picking_type_id.warehouse_id.partner_id.zip if pos_order.picking_type_id.warehouse_id.partner_id.zip else '01001'
+                            store_city = pos_order.picking_type_id.warehouse_id.partner_id.city if pos_order.picking_type_id.warehouse_id.partner_id.city else ''
+                            store_state = pos_order.picking_type_id.warehouse_id.partner_id.state_id.name if pos_order.picking_type_id.warehouse_id.partner_id.state_id else ''
+                            store_country = pos_order.picking_type_id.warehouse_id.partner_id.country_id.code if pos_order.picking_type_id.warehouse_id.partner_id.country_id else 'GT'
+                            commercial_name = pos_order.picking_type_id.warehouse_id.partner_id.name
         elif invoice.invoice_origin:
             sale_ids = self.env['sale.order'].search([('name', '=', invoice.invoice_origin)])
             for sale_id in sale_ids:
