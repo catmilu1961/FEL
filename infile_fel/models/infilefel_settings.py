@@ -97,7 +97,10 @@ class infilefel_settings(models.Model):
         def escape_string(value):
             # return value.replace('&', '&amp;').replace('>', '&gt;').replace('<', '&lt').replace('"', '&quot;').replace("'", '&apos;')
             # eturn html.escape(value).encode("ascii", "xmlcharrefreplace").encode('utf8')
-            return value.replace('&', '&amp;').replace('"', '&quot;').replace("'", '&apos;').replace("<", '&lt;').replace(">", '&gt;')
+            ret = ''
+            if value:
+                ret = value.replace('&', '&amp;').replace('"', '&quot;').replace("'", '&apos;').replace("<", '&lt;').replace(">", '&gt;')
+            return ret
 
         store_address = ''
         store_zipcode = ''
