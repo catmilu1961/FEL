@@ -197,9 +197,9 @@ class infilefel_settings(models.Model):
                         Cantidad=line.quantity,
                         UnidadMedida=line.product_uom_id.name[:3],
                         Descripcion='{}|{}'.format(line.product_id.default_code, escape_string(line.product_id.name)),
-                        PrecioUnitario=line.price_unit,
-                        Precio=line_gross,
-                        Descuento=line_discount,
+                        PrecioUnitario='{:.2f}'.format(line.price_unit),
+                        Precio='{:.2f}'.format(line_gross),
+                        Descuento='{:.2f}'.format(line_discount),
                         TituloImpuestos='' if invoice.journal_id.infilefel_type in ['RDON', 'NABN', 'NDEB'] else '<dte:Impuestos>'
                     )
                     # UnidadMedida = escape_string(line.product_uom_id.name[:3]),
@@ -221,8 +221,8 @@ class infilefel_settings(models.Model):
                                 """.format(
                                     NombreCorto=tax_id.infilefel_sat_code,
                                     CodigoUnidadGravable='1',
-                                    MontoGravable=line.price_subtotal,
-                                    MontoImpuesto=amount
+                                    MontoGravable='{:.2f}'.format(line.price_subtotal),
+                                    MontoImpuesto='{:.2f}'.format(amount)
                                 )
                                 if tax_id.infile_tax_type == 'iva':
                                     iva_retention += amount
@@ -247,7 +247,7 @@ class infilefel_settings(models.Model):
                         """.format(
                             NombreCorto='IVA',
                             CodigoUnidadGravable='2',
-                            MontoGravable=line.price_subtotal,
+                            MontoGravable='{:.2f}'.format(line.price_subtotal),
                             MontoImpuesto=0
                         )
                         tax_added = False
@@ -265,7 +265,7 @@ class infilefel_settings(models.Model):
                             <dte:Total>{Total}</dte:Total>
                         </dte:Item>
                     """.format(TituloImpuestos='' if invoice.journal_id.infilefel_type in ['RDON', 'NABN', 'NDEB'] else '</dte:Impuestos>',
-                               Total=line_amount)
+                               Total='{:.2f}'.format(line_amount))
 
             #
             # Frases
@@ -427,7 +427,7 @@ class infilefel_settings(models.Model):
                                 </cfc:Abono>
                             </cfc:AbonosFacturaCambiaria>
                         </dte:Complemento>
-                    </dte:Complementos>""".format(FechaVencimiento=invoice.date_due, Monto=invoice.amount_total)
+                    </dte:Complementos>""".format(FechaVencimiento=invoice.date_due, Monto='{:.2f}'.format(invoice.amount_total))
             elif invoice.journal_id.infilefel_type == 'FESP':
                 extras = """
                         <dte:Complementos>
@@ -438,7 +438,7 @@ class infilefel_settings(models.Model):
                                     <cfe:TotalMenosRetenciones>{TotalMenosRetenciones}</cfe:TotalMenosRetenciones>
                                 </cfe:RetencionesFacturaEspecial>
                             </dte:Complemento>
-                        </dte:Complementos>""".format(RetencionISR=isr_retention - invoice.amount_total - iva_retention, RetencionIVA=iva_retention, TotalMenosRetenciones=invoice.amount_total)
+                        </dte:Complementos>""".format(RetencionISR='{:.2f}'.format(isr_retention - invoice.amount_total - iva_retention), RetencionIVA='{:.2f}'.format(iva_retention), TotalMenosRetenciones='{:.2f}'.format(invoice.amount_total))
             elif invoice.journal_id.infilefel_type in ['NCRE', 'NDEB']:
                 extras = """
                             <dte:Complementos>
@@ -506,7 +506,7 @@ class infilefel_settings(models.Model):
                 </dte:SAT>
 </dte:GTDocumento>""".format(
                 TituloImpuestos='' if invoice.journal_id.infilefel_type in ['RDON', 'NABN', 'NDEB'] else '</dte:TotalImpuestos>',
-                GranTotal=isr_retention if invoice.journal_id.infilefel_type == 'FESP' else invoice.amount_total, Complementos=extras)
+                GranTotal='{:.2f}'.format(isr_retention) if invoice.journal_id.infilefel_type == 'FESP' else '{:.2f}'.format(invoice.amount_total), Complementos=extras)
             source_xml = xml
 
             xmlb64 = ''
