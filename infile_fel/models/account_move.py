@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from odoo import models, fields, api, exceptions, _
+import uuid
 
 class infilefel_account_move(models.Model):
     _name = "account.move"
@@ -33,14 +34,23 @@ class infilefel_account_move(models.Model):
     #             self.write({ 'name': '{}-{}'.format(self.infilefel_serial, self.infilefel_number), })
     #     return ret
 
+    def create(self, vals):
+        vals['infilefel_uuid'] = str(uuid.uuid4())
+        ret = super(infilefel_account_move, self).create(vals)
+        return ret
+
     def _post(self, soft=True):
-        settings = self.env['infilefel.settings'].search([])
-        if settings:
-            settings.sign_document(self)
+        if not self.infilefel_uuid:
+            self.infilefel_uuid = str(uuid.uuid4())
+        if self.infilefel_uuid.strip() == '':
+            self.infilefel_uuid = str(uuid.uuid4())
         ret = super(infilefel_account_move, self)._post(soft)
         if ret:
-            if self.journal_id.infilefel_type and self.journal_id.infilefel_type != '':
-                self.write({ 'name': '{}-{}'.format(self.infilefel_serial, self.infilefel_number), })
+            settings = self.env['infilefel.settings'].search([])
+            if settings:
+                settings.sign_document(self)
+                if self.journal_id.infilefel_type and self.journal_id.infilefel_type != '':
+                    self.write({ 'name': '{}-{}'.format(self.infilefel_serial, self.infilefel_number), })
         return ret
 
     def infilefel_move_void(self):
