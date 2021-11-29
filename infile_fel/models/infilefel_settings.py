@@ -160,11 +160,6 @@ class infilefel_settings(models.Model):
             if len(partner_vat) == 13 and invoice.journal_id.infilefel_type == 'FESP':
                 special_type = 'TipoEspecial="CUI"'
 
-            if not invoice.infilefel_uuid:
-                invoice.infilefel_uuid = str(uuid.uuid4())
-            if invoice.infilefel_uuid.strip() == '':
-                invoice.infilefel_uuid = str(uuid.uuid4())
-
             #
             # Líneas del documento
             #
