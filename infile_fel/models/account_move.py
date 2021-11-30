@@ -42,10 +42,11 @@ class infilefel_account_move(models.Model):
         return ret
 
     def _post(self, soft=True):
-        if not self.infilefel_uuid:
-            self.infilefel_uuid = str(uuid.uuid4())
-        if self.infilefel_uuid.strip() == '':
-            self.infilefel_uuid = str(uuid.uuid4())
+        for invoice in self:
+            if not invoice.infilefel_uuid:
+                invoice.infilefel_uuid = str(uuid.uuid4())
+            if invoice.infilefel_uuid.strip() == '':
+                invoice.infilefel_uuid = str(uuid.uuid4())
         ret = super(infilefel_account_move, self)._post(soft)
         if ret:
             settings = self.env['infilefel.settings'].search([])
