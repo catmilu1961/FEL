@@ -18,13 +18,13 @@
                 </xpath>
                 <field name="invoice_payment_term_id" position="after">
                     <field name="infilefel_export"/>
+                    <field name="infilefel_uuid"/>
                 </field>
                 <xpath expr="//form//sheet/notebook" position="inside">
                     <page name="infilefel" string="FEL Data" attrs="{'invisible':[('infilefel_sat_uuid', '=', False)]}">
                         <notebook name="infilefel_data">
                             <page name="infilefel_invoice_data" string="FEL Invoice data">
                                 <group>
-                                    <field name="infilefel_uuid"/>
                                     <field name="infilefel_sat_uuid"/>
                                     <field name="infilefel_serial"/>
                                     <field name="infilefel_number"/>
