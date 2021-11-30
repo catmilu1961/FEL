@@ -51,9 +51,10 @@ class infilefel_account_move(models.Model):
         if ret:
             settings = self.env['infilefel.settings'].search([])
             if settings:
-                settings.sign_document(self)
-                if self.journal_id.infilefel_type and self.journal_id.infilefel_type != '':
-                    self.write({ 'name': '{}-{}'.format(self.infilefel_serial, self.infilefel_number), })
+                for invoice in self:
+                    settings.sign_document(invoice)
+                    if invoice.journal_id.infilefel_type and invoice.journal_id.infilefel_type != '':
+                        invoice.write({ 'name': '{}-{}'.format(invoice.infilefel_serial, invoice.infilefel_number), })
         return ret
 
     def infilefel_move_void(self):
