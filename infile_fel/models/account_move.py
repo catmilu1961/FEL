@@ -34,9 +34,11 @@ class infilefel_account_move(models.Model):
     #             self.write({ 'name': '{}-{}'.format(self.infilefel_serial, self.infilefel_number), })
     #     return ret
 
-    def create(self, vals):
-        vals['infilefel_uuid'] = str(uuid.uuid4())
-        ret = super(infilefel_account_move, self).create(vals)
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            vals['infilefel_uuid'] = str(uuid.uuid4())
+        ret = super(infilefel_account_move, self).create(vals_list)
         return ret
 
     def _post(self, soft=True):
