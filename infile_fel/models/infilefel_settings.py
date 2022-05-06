@@ -139,6 +139,8 @@ class infilefel_settings(models.Model):
             store_state = invoice.company_id.state_id.name if invoice.company_id.state_id else ''
             store_country = invoice.company_id.country_id.code if invoice.company_id.country_id else 'GT'
             commercial_name = invoice.company_id.name
+        if not invoice.invoice_date:
+            invoice.invoice_date = datetime.now().replace(tzinfo=pytz.UTC).astimezone(pytz.timezone(self.env.user.tz))
         if not invoice.journal_id.infilefel_type:
             return
         elif invoice.journal_id.infilefel_type == '':
@@ -146,7 +148,7 @@ class infilefel_settings(models.Model):
         elif invoice.infilefel_sat_uuid:
             # raise UserError(_('Document is already signed'))
             return
-        elif not invoice.date:
+        elif not invoice.invoice_date:
             raise UserError(_('Missing document date'))
         elif store_address == '':
             raise UserError(_('Missing warehouse/address'))
@@ -171,16 +173,16 @@ class infilefel_settings(models.Model):
             taxes = []
             line_number = 0
             for line in invoice.invoice_line_ids:
-                if line.product_id:
+                if line.product_id and line.quantity >= 0:
                     line_number += 1
                     if line.tax_ids:
                         line_gross = round(line.price_unit * line.quantity, 2)
-                        line_discount = round(line_gross * line.discount / 100, 2)
-                        line_amount = line_gross - line_discount
+                        line_amount = round(line.price_total, 2)
+                        line_discount = round(line_gross - line_amount, 2)
                     else:
-                        line_gross = line.price_subtotal
+                        line_gross = round(line.price_subtotal, 2)
                         line_discount = round(line_gross * line.discount / 100, 2)
-                        line_amount = line_gross - line_discount
+                        line_amount = round(line_gross - line_discount, 2)
                     isr_retention += line_amount
 
                     xml_lines += """<dte:Item BienOServicio="{BienOServicio}" NumeroLinea="{NumeroLinea}">
@@ -297,7 +299,7 @@ class infilefel_settings(models.Model):
             current_time_write = datetime.now().replace(tzinfo=pytz.UTC).astimezone(pytz.timezone(self.env.user.tz)).strftime('%H:%M:%S')
             # current_time = datetime.now().replace(tzinfo=pytz.UTC).astimezone(pytz.timezone(self.env.user.tz)).strftime('%H:%M:%S')
             # invoice_sign_date = invoice.date + current_time
-            invoice_sign_date = invoice.date.strftime('%Y-%m-%dT') + current_time
+            invoice_sign_date = invoice.invoice_date.strftime('%Y-%m-%dT') + current_time
             invoice_sign_date_write = "{} {}".format(invoice.date.strftime('%Y-%m-%d'), current_time_write)
             xml = """<?xml version="1.0" encoding="UTF-8"?><dte:GTDocumento Version="0.1" xmlns:dte="http://www.sat.gob.gt/dte/fel/0.2.0" xmlns:xd="http://www.w3.org/2000/09/xmldsig#">
             <dte:SAT ClaseDocumento="dte">
@@ -452,30 +454,31 @@ class infilefel_settings(models.Model):
                 """
                 id_complemento = ''
                 nombre_complemento = ''
-                if invoice.refund_invoice_id:
+                if invoice.reversed_entry_id:
                     previous_regime = ''
-                    original_document = invoice.origin
+                    original_document = ''
                     reason = ''
-                    if invoice.refund_invoice_id.infilefel_sat_uuid:
+                    if invoice.reversed_entry_id.infilefel_sat_uuid:
                         id_complemento = 'ReferenciasNota'
                         nombre_complemento = 'ReferenciasNota'
-                        original_document = invoice.refund_invoice_id.infilefel_sat_uuid
+                        original_document = invoice.reversed_entry_id.infilefel_sat_uuid
                         reason = 'MotivoAjuste="{}"'.format(invoice.name)
                     else:
                         id_complemento = 'ComplementoReferenciaNota'
                         nombre_complemento = 'Complemento Referencia Nota'
                         previous_regime = 'RegimenAntiguo="Antiguo"'
-                        #                            original_document = invoice.refund_invoice_id.journal_id.infilefel_previous_authorization
-                        original_document = invoice.refund_invoice_id.resolution_id.name
-                        #                            reason = 'SerieDocumentoOrigen="{}" NumeroDocumentoOrigen="{}"'.format(invoice.refund_invoice_id.journal_id.infilefel_previous_serial, invoice.refund_invoice_id.name)
+                        #                            original_document = invoice.reversed_entry_id.journal_id.infilefel_previous_authorization
+                        original_document = invoice.reversed_entry_id.resolution_id.name
+                        #                            reason = 'SerieDocumentoOrigen="{}" NumeroDocumentoOrigen="{}"'.format(invoice.reversed_entry_id.journal_id.infilefel_previous_serial, invoice.reversed_entry_id.name)
                         reason = 'SerieDocumentoOrigen="{}" NumeroDocumentoOrigen="{}"'.format(
-                            invoice.refund_invoice_id.gface_dte_serial[8:9],
-                            str(int(invoice.refund_invoice_id.gface_dte_number[16:100])))
+                            invoice.reversed_entry_id.infilefel_serial,
+                            invoice.reversed_entry_id.infilefel_number
+                        )
 
                     references = references.format(
                         RegimenAnterior=previous_regime,
                         DocumentoOrigen=original_document,
-                        FechaEmision=invoice.refund_invoice_id.date,
+                        FechaEmision=invoice.reversed_entry_id.invoice_date,
                         MotivoAjuste=reason,
                     )
                 else:
@@ -483,7 +486,7 @@ class infilefel_settings(models.Model):
                     nombre_complemento = 'Complemento Referencia Nota'
                     #                        reason = 'SerieDocumentoOrigen="{}" NumeroDocumentoOrigen="{}"'.format(invoice.journal_id.infilefel_previous_serial, invoice.name)
                     reason = 'SerieDocumentoOrigen="{}" NumeroDocumentoOrigen="{}"'.format(
-                        invoice.refund_invoice_id.gface_dte_serial, invoice.refund_invoice_id.resolution_id.name)
+                        invoice.reversed_entry_id.infilefel_serial, invoice.reversed_entry_id.infilefel_number)
                     references = references.format(
                         RegimenAnterior='RegimenAntiguo="Antiguo"',
                         DocumentoOrigen=invoice.journal_id.infilefel_previous_authorization,
@@ -552,7 +555,7 @@ class infilefel_settings(models.Model):
                 }
                 data = {
                     'nit_emisor': invoice.company_id.vat.replace('-', '') if invoice.company_id.vat else 'C/F',
-                    'correo_copia': invoice.company_id.email or 'ORamirezO@gmail.com',
+                    'correo_copia': invoice.company_id.email or 'Info@acentoNET.com',
                     'xml_dte': xmlb64
                 }
                 try:
@@ -584,7 +587,6 @@ class infilefel_settings(models.Model):
                             'infilefel_vat': partner_vat,
                             'infilefel_name': partner_name,
                             'infilefel_address': partner_address,
-                            'name': '{}-{}'.format(result['serie'], result['numero']),
                         })
                     else:
                         error_message = u''
@@ -712,9 +714,6 @@ class infilefel_settings(models.Model):
                                 'infilefel_void_result_xml': result['xml_certificado'],
                             })
                             invoice.button_cancel()
-                            invoice.write({
-                                'name': '{}-{}'.format(invoice.infilefel_serial, invoice.infilefel_number),
-                            })
                         else:
                             error_message = u''
                             if type(result['descripcion_errores']) is list:

@@ -16,35 +16,35 @@
                         groups="account.group_account_invoice"
                     />
                 </xpath>
-                <field name="invoice_payment_term_id" position="after">
+                <field name="partner_id" position="after">
                     <field name="infilefel_export"/>
-                    <field name="infilefel_uuid"/>
+                    <field name="infilefel_uuid" readonly="1"/>
                 </field>
                 <xpath expr="//form//sheet/notebook" position="inside">
                     <page name="infilefel" string="FEL Data" attrs="{'invisible':[('infilefel_sat_uuid', '=', False)]}">
                         <notebook name="infilefel_data">
                             <page name="infilefel_invoice_data" string="FEL Invoice data">
                                 <group>
-                                    <field name="infilefel_sat_uuid"/>
-                                    <field name="infilefel_serial"/>
-                                    <field name="infilefel_number"/>
+                                    <field name="infilefel_sat_uuid" readonly="1"/>
+                                    <field name="infilefel_serial" readonly="1"/>
+                                    <field name="infilefel_number" readonly="1"/>
                                 </group>
                                 <group>
-                                    <field name="infilefel_sign_date"/>
-                                    <field name="infilefel_source_xml"/>
-                                    <field name="infilefel_signed_xml"/>
-                                    <field name="infilefel_result_xml"/>
+                                    <field name="infilefel_sign_date" readonly="1"/>
+                                    <field name="infilefel_source_xml" readonly="1"/>
+                                    <field name="infilefel_signed_xml" readonly="1"/>
+                                    <field name="infilefel_result_xml" readonly="1"/>
                                 </group>
                             </page>
                             <page name="infilefel_void_data" string="FEL Void data" attrs="{'invisible':[('infilefel_void_uuid', '=', False)]}">
                                 <group>
-                                    <field name="infilefel_void_uuid"/>
-                                    <field name="infilefel_void_sat_uuid"/>
+                                    <field name="infilefel_void_uuid" readonly="1"/>
+                                    <field name="infilefel_void_sat_uuid" readonly="1"/>
                                 </group>
                                 <group>
-                                    <field name="infilefel_void_source_xml"/>
-                                    <field name="infilefel_void_signed_xml"/>
-                                    <field name="infilefel_void_result_xml"/>
+                                    <field name="infilefel_void_source_xml" readonly="1"/>
+                                    <field name="infilefel_void_signed_xml" readonly="1"/>
+                                    <field name="infilefel_void_result_xml" readonly="1"/>
                                 </group>
                             </page>
                         </notebook>

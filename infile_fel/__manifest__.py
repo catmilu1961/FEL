@@ -11,7 +11,7 @@
     'website': "http://www.acentoNET.com",
     'category': 'Sales',
     'sequence': 20,
-    'version': '0.1',
+    'version': '0.4',
     'depends': ['account', 'point_of_sale'],
     'external_dependencies': {'python': ['zeep', 'xmltodict']},
     'data': [

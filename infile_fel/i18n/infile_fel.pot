@@ -544,7 +544,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:infile_fel.field_account_bank_statement_line__infilefel_export
 #: model:ir.model.fields,field_description:infile_fel.field_account_move__infilefel_export
 #: model:ir.model.fields,field_description:infile_fel.field_account_payment__infilefel_export
-msgid "Export"
+msgid "Export invoice"
 msgstr ""
 
 #. module: infile_fel

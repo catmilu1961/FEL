@@ -531,8 +531,8 @@ msgstr "Fechas de caducidad"
 #. module: infile_fel
 #: model:ir.model.fields,field_description:infile_fel.field_account_bank_statement_line__infilefel_export model:ir.model.fields,field_description:infile_fel.field_account_move__infilefel_export
 #: model:ir.model.fields,field_description:infile_fel.field_account_payment__infilefel_export
-msgid "Export"
-msgstr "Exportación"
+msgid "Export invoice"
+msgstr "Factura para exportación"
 
 #. module: infile_fel
 #: model:ir.model.fields,field_description:infile_fel.field_infilefel_config_settings__external_email_server_default
